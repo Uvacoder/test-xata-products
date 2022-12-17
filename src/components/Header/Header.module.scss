@@ -10,9 +10,12 @@
 }
 
 .headerContainer {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+
 }
 
 .headerTitle {
@@ -29,14 +32,7 @@
   display: flex;
   list-style: none;
   padding: 0;
-  margin: 0 2em;
-
-  @media (max-width: 720px) {
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-  }
+  margin: 0;
 
   li {
     margin: 0 0.8em;

@@ -1,7 +1,9 @@
 @import "@styles/settings/_settings";
 
 .homeContainer {
-  display: flex;
+  @media (min-width: 720px) {
+    display: flex;
+  }
 }
 
 .checklist {
@@ -43,7 +45,9 @@
 
 .sidebar {
 
-  width: 20em;
+  @media (min-width: 720px) {
+    width: 20em;
+  }
 
   [type="search"] {
     display: block;
