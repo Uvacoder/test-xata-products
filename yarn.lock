@@ -248,6 +248,11 @@
     "@typescript-eslint/types" "5.46.1"
     eslint-visitor-keys "^3.3.0"
 
+"@xata.io/client@^0.21.4":
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/@xata.io/client/-/client-0.21.4.tgz#753bd259333180d3a55f7732c68f3566e0445ccc"
+  integrity sha512-W79d0V17xRNGvQMVrxgloVgI5aZRX2tiVPL33VE7bmCjgWyLFGU8/CcXvcvt5vwsCKA6G0AvMppN2vk9BKQVqA==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
@@ -1913,6 +1918,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-debounce@^9.0.2:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-9.0.2.tgz#2883982ec1eb79affec46f14047244057b78161c"
+  integrity sha512-QLyB0sxt9F5AisGDrUybCRJSLE60bTQR0yXc+IebNGUu1GCXwii1zsZl82mPGdWqDVQy7+1FKMLHQUixxf5Nbw==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

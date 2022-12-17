@@ -2,8 +2,6 @@ const fs = require('fs').promises;
 const fetch = require('node-fetch');
 const { AsyncParser } = require('@json2csv/node');
 
-const NUMBER_OF_PRODUCTS = 50;
-
 (async function run() {
   console.log(`Creating ${NUMBER_OF_PRODUCTS} products...`);
   console.log('This may take a minute!')

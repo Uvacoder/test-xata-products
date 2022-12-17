@@ -1,0 +1,8 @@
+{
+  "databaseURL": "https://Test-1np8m4.us-east-1.xata.sh/db/test-products",
+  "codegen": {
+    "output": "src/lib/xata.js",
+    "moduleType": "esm",
+    "declarations": true
+  }
+}

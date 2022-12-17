@@ -1,6 +1,10 @@
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { FaStar, FaCheck } from 'react-icons/fa';
+import { useDebouncedCallback } from 'use-debounce';
+
+import { getXataClient } from '@lib/xata';
 
 import Layout from '@components/Layout';
 import Section from '@components/Section';
@@ -8,7 +12,59 @@ import Container from '@components/Container';
 
 import styles from '@styles/Home.module.scss';
 
-export default function Home({ products, categories }) {
+export default function Home({ products, categories: defaultCategories }) {
+  const [query, setQuery] = useState();
+  const [searchResults, setSearchResults] = useState();
+  const [categories, setCategories] = useState(defaultCategories);
+  const [selectedCategory, setSelectedCategory] = useState();
+
+  const debouncedSetQuery = useDebouncedCallback((value) => setQuery(value), 500);
+
+  const activeProducts = searchResults?.length ? searchResults : products;
+  const activeCategories = categories.sort((a, b) => {
+    if( a.name > b.name ) {
+      return 1;
+    }
+    if ( a.name < b.name ) {
+      return -1;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    if ( ( !query || query.length < 3) && !selectedCategory ) {
+      setSearchResults(undefined);
+      return;
+    }
+
+    (async function run() {
+      const { products } = await fetch('/api/search', {
+        method: 'POST',
+        body: JSON.stringify({
+          query,
+          category: selectedCategory
+        })
+      }).then(r => r.json());
+      setSearchResults(products);
+    })();
+  }, [query, selectedCategory]);
+
+  useEffect(() => {
+    (async function run() {
+      const { categories } = await fetch('/api/categories').then(r => r.json());
+      setCategories(categories);
+    })();
+  }, []);
+
+  function handleOnSearch(e) {
+    debouncedSetQuery(e.currentTarget.value);
+  }
+
+  function handleOnCategorySelect(e) {
+    const radio = Array.from(e.currentTarget.elements).find(({ checked }) => checked);
+    setSelectedCategory(radio.value);
+  }
+
   return (
     <Layout>
       <Head>
@@ -22,34 +78,37 @@ export default function Home({ products, categories }) {
       <Section>
         <Container className={styles.homeContainer}>
           <div className={styles.sidebar}>
-            <form>
-              <div className={`${styles.sidebarSection} ${styles.sidebarSearch}`}>
+            <div className={`${styles.sidebarSection} ${styles.sidebarSearch}`}>
+              <form>
                 <h2><label>Search</label></h2>
-                <input type="search" />
-              </div>
-              <div className={`${styles.sidebarSection} ${styles.sidebarCategories}`}>
-                <h2>Categories</h2>
+                <input type="search" onChange={handleOnSearch} />
+              </form>
+            </div>
+            <div className={`${styles.sidebarSection} ${styles.sidebarCategories}`}>
+              <h2>Categories</h2>
+              <form onChange={handleOnCategorySelect}>
                 <ul className={styles.checklist}>
-                  { categories.map(category => {
+                  { activeCategories.map(category => {
                     return (
-                      <li key={category}>
-                        <label className={styles.checkbox}>
-                          <input className="sr-only" type="checkbox" />
+                      <li key={category.name}>
+                        <label className={styles.radio}>
+                          <input className="sr-only" type="radio" name="category" value={category.name} />
                           <span><FaCheck /></span>
-                          { category }
+                          { category.name }
+                          { category.count && ` (${category.count})`}
                         </label>
                       </li>
                     )
                   }) }
                 </ul>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
 
           <h2 className="sr-only">Products</h2>
 
           <ul className={styles.products}>
-            {products.map(product => {
+            {activeProducts.map(product => {
               return (
                 <li key={product.id}>
                   <a className={styles.productImageWrapper} href={product.url} rel="noopener noreferrer">
@@ -59,7 +118,7 @@ export default function Home({ products, categories }) {
                     <a href={product.url} rel="noopener noreferrer">{ product.title }</a>
                   </h3>
                   <p className={styles.productRating}>
-                    <FaStar /> { product.rating_rate } ({ product.rating_count })
+                    <FaStar /> { product.ratingRate } ({ product.ratingCount })
                   </p>
                   <p className={styles.productPrice}>
                     ${ (product.price / 100).toFixed(2)}
@@ -75,23 +134,16 @@ export default function Home({ products, categories }) {
 }
 
 export async function getStaticProps() {
-  const productData = await fetch('https://fakestoreapi.com/products').then(r => r.json());
+  const xata = getXataClient();
+  const page = await xata.db.products.getPaginated();
+  const products = page.records;
 
-  const products = productData.map(item => {
-    const product = {
-      ...item,
-      rating_rate: item.rating.rate,
-      rating_count: item.rating.count,
-      price: item.price * 100
-    }
-
-    delete product.rating;
-    delete product.description;
-
-    return product;
-  });
-
-  const categories = Array.from(new Set(products.map(({ category }) => category)));
+  const categories = Array.from(new Set(products.map(({ category }) => category)))
+    .map(category => {
+      return {
+        name: category
+      }
+    });
 
   return {
     props: {
