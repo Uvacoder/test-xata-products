@@ -88,6 +88,13 @@ export default function Home({ products, categories: defaultCategories }) {
               <h2>Categories</h2>
               <form onChange={handleOnCategorySelect}>
                 <ul className={styles.checklist}>
+                  <li>
+                    <label className={styles.radio}>
+                      <input className="sr-only" type="radio" name="category" value={false} defaultChecked />
+                      <span><FaCheck /></span>
+                      all ({ products.length })
+                    </label>
+                  </li>
                   { activeCategories.map(category => {
                     return (
                       <li key={category.name}>
